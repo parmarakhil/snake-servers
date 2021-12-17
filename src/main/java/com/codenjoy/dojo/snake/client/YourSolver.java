@@ -10,12 +10,12 @@ package com.codenjoy.dojo.snake.client;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -25,12 +25,16 @@ package com.codenjoy.dojo.snake.client;
 
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.client.WebSocketRunner;
+import com.codenjoy.dojo.profile.P;
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.Direction;
+import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.RandomDice;
 
+import java.util.stream.Collectors;
+
 /**
- * @author Akhil Parmar
+ * @author Akhil parmar
  */
 public class YourSolver implements Solver<Board> {
 
@@ -46,12 +50,40 @@ public class YourSolver implements Solver<Board> {
         this.board = board;
         System.out.println(board.toString());
 
-        return Direction.UP.toString();
+        Point appleCoordinates = board.getApples().get(0);
+        Point snakeCoordinates = board.getHead();
+        Point stoneCoordinates = board.getStones().get(0);
+
+        if(snakeCoordinates.getX() < appleCoordinates.getX() && !isBarrierAt(board, snakeCoordinates.getX()+1 , snakeCoordinates.getY())){
+            return Direction.RIGHT.toString();
+        }
+        else if(snakeCoordinates.getX() < appleCoordinates.getX() && !isBarrierAt(board, snakeCoordinates.getX()-1 , snakeCoordinates.getY())){
+            return Direction.LEFT.toString();
+        }else if(snakeCoordinates.getY() < appleCoordinates.getY() && !isBarrierAt(board, snakeCoordinates.getX() , snakeCoordinates.getY()+1)){
+            return Direction.UP.toString();
+        }else if(snakeCoordinates.getY() < appleCoordinates.getY() && !isBarrierAt(board, snakeCoordinates.getX() , snakeCoordinates.getY()-1)){
+            return Direction.DOWN.toString();
+        }
+
+        if(!isBarrierAt(board, snakeCoordinates.getX(), snakeCoordinates.getY()-1))return  Direction.DOWN.toString();
+        else if(!isBarrierAt(board, snakeCoordinates.getX(), snakeCoordinates.getY()+1))return  Direction.UP.toString();
+        else if(!isBarrierAt(board, snakeCoordinates.getX()+1, snakeCoordinates.getY()))return  Direction.RIGHT.toString();
+        return  Direction.LEFT.toString();
+
+    }
+
+    private boolean isBarrierAt(Board board, int x, int y) {
+
+        int barrierSize  = board.getBarriers().stream().filter( s -> s.getX() == x && s.getY() ==y ).collect(Collectors.toList()).size();
+
+        int snakeSize = board.getSnake().stream().filter( s -> s.getX() == x && s.getY() ==y ).collect(Collectors.toList()).size();
+        if(barrierSize == 0 && snakeSize ==0 ) return  false;
+        return true;
     }
 
     public static void main(String[] args) {
         WebSocketRunner.runClient(
-                // paste here board page url from browser after registration as shown below
+                // paste here board page url from browser after registration
                 "http://codenjoy.com:80/codenjoy-contest/board/player/3edq63tw0bq4w4iem7nb?code=1234567890123456789",
                 new YourSolver(new RandomDice()),
                 new Board());
