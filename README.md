@@ -1,9 +1,15 @@
-For NonJava languages:
+# Snake Servers
+Snake game from codenjoy
+
+
+
+## Instructions
+#### For NonJava languages:
 - please go to .\src\main\<language>
 - chose your language
 - and follow README.md instructions
 
-For Java:
+#### For Java:
 - setup Java (JDK 11)
     + setup JAVA_HOME variable
 - setup Maven3
