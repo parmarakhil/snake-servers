@@ -1,7 +1,6 @@
 # Snake Servers
 Snake game from codenjoy
-
-
+The java implementation is provided
 
 ## Instructions
 #### For NonJava languages:
